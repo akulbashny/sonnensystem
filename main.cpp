@@ -14,12 +14,18 @@
 #define WINDOW_HEIGHT 480
 
 cg::Sphere* sun = nullptr;
+
 cg::Sphere* planet1 = nullptr;
 cg::Sphere* planet2 = nullptr;
+
 cg::Sphere* moon1_1 = nullptr;
 cg::Sphere* moon1_2 = nullptr;
 cg::Sphere* moon1_3 = nullptr;
+
 cg::Sphere* moon2_1 = nullptr;
+cg::Sphere* moon2_2 = nullptr;
+cg::Sphere* moon2_3 = nullptr;
+cg::Sphere* moon2_4 = nullptr;
 
 
 glm::mat4x4 view;
@@ -50,6 +56,9 @@ void release()
 	delete moon1_3;
 
 	delete moon2_1;
+	delete moon2_2;
+	delete moon2_3;
+	delete moon2_4;
 }
 
 /*
@@ -86,6 +95,9 @@ bool init()
 		moon1_3 = new cg::Sphere(glm::vec3(0.0f, 0.0f, 0.0f));
 
 		moon2_1 = new cg::Sphere(glm::vec3(0.0f, 0.0f, 0.0f));
+		moon2_2 = new cg::Sphere(glm::vec3(0.0f, 0.0f, 0.0f));
+		moon2_3 = new cg::Sphere(glm::vec3(0.0f, 0.0f, 0.0f));
+		moon2_4 = new cg::Sphere(glm::vec3(0.0f, 0.0f, 0.0f));
 	}
 	catch (const std::exception& e)
 	{
@@ -99,25 +111,33 @@ bool init()
 	sun->model = glm::scale(sun->model, glm::vec3(sun_size));
 	
 
-	planet1->model = glm::translate(sun->model, glm::vec3(4.0f, 0.0f, 0.0f));
+	planet1->model = glm::translate(planet1->model, glm::vec3(4.0f, 0.0f, 0.0f));
 	planet1->model = glm::scale(planet1->model, glm::vec3(planet_size));
 	
-	moon1_1->model = glm::translate(planet1->model, glm::vec3(3.0f, 0.0f, 0.0f));
+	moon1_1->model = glm::translate(planet1->model, glm::vec3(2.0f, 0.0f, 0.0f));
 	moon1_1->model = glm::scale(moon1_1->model, glm::vec3(moon_size));
 
-	moon1_2->model = glm::translate(planet1->model, glm::vec3(3.0f, 1.0f, 0.0f));
+	moon1_2->model = glm::translate(planet1->model, glm::vec3(0.0f, 0.0f, 2.0f));
 	moon1_2->model = glm::scale(moon1_2->model, glm::vec3(moon_size));
 
-	moon1_3->model = glm::translate(planet1->model, glm::vec3(3.0f, 2.0f, 0.0f));
+	moon1_3->model = glm::translate(planet1->model, glm::vec3(0.0f, 0.0f, -2.0f));
 	moon1_3->model = glm::scale(moon1_3->model, glm::vec3(moon_size));
-
 	
 	planet2->model = glm::translate(sun->model, glm::vec3(-2.5f, 0.0f, 0.0f));
 	planet2->model = glm::rotate(planet2->model, ((glm::pi<float>() * 2) / (360/(alpha+beta))), glm::vec3(0.0f, 0.0f, 1.0f));
 	planet2->model = glm::scale(planet2->model, glm::vec3(planet_size));
 
-	moon2_1->model = glm::translate(planet2->model, glm::vec3(-3.0f, 0.0f, 0.0f));
+	moon2_1->model = glm::translate(planet2->model, glm::vec3(-2.0f, 0.0f, 0.0f));
 	moon2_1->model = glm::scale(moon2_1->model, glm::vec3(moon_size));
+
+	moon2_2->model = glm::translate(planet2->model, glm::vec3(0.0f, 0.0f, 2.0f));
+	moon2_2->model = glm::scale(moon2_2->model, glm::vec3(moon_size));
+
+	moon2_3->model = glm::translate(planet2->model, glm::vec3(0.0f, 0.0f, -2.0f));
+	moon2_3->model = glm::scale(moon2_3->model, glm::vec3(moon_size));
+
+	moon2_4->model = glm::translate(planet2->model, glm::vec3(2.0f, 0.0f, 0.0f));
+	moon2_4->model = glm::scale(moon2_4->model, glm::vec3(moon_size));
 
 	std::cout << "Use x, y, z to rotate the sphere" << std::endl;
 	std::cout << "Use + and - to scale the sphere" << std::endl;
@@ -130,7 +150,6 @@ bool init()
  */
 void render()
 {
-
 	// Translate, Rotate, Scale and Draw
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
@@ -144,15 +163,21 @@ void render()
 	moon1_3->render(view, projection);
 
 	moon2_1->render(view, projection);
+	moon2_2->render(view, projection);
+	moon2_3->render(view, projection);
+	moon2_4->render(view, projection);
 
-
-	//sun->model = glm::rotate(sun->model, 0.0001f, glm::normalize(glm::vec3(0.0f, 1.0f, 0.0f)));
-
-	planet1->model = glm::translate(sun->model, glm::vec3(4.0f, 0.0f, 0.0f));
-	planet1->model = glm::scale(planet1->model, glm::vec3(planet_size));
 	
+	sun->model = glm::rotate(sun->model, 0.00025f, glm::normalize(glm::vec3(0.0f, 1.0f, 0.0f)));
 
-	moon1_1->model = glm::translate(planet1->model, glm::vec3(3.0f, 0.0f, 0.0f));
+	
+	static GLfloat speed = 0.0000f; //Hier
+	
+	planet1->model = glm::translate(sun->model, glm::vec3(4.0f, 0.0f, 0.0f));
+	planet1->model = glm::rotate(planet1->model, speed, glm::normalize(glm::vec3(0.0f, 1.0f, 0.0f))); //Hier
+	planet1->model = glm::scale(planet1->model, glm::vec3(planet_size));
+
+	moon1_1->model = glm::translate(planet1->model, glm::vec3(2.0f, 0.0f, 0.0f));
 	moon1_1->model = glm::scale(moon1_1->model, glm::vec3(moon_size));
 
 	moon1_2->model = glm::translate(planet1->model, glm::vec3(0.0f, 0.0f, 2.0f));
@@ -163,13 +188,23 @@ void render()
 
 	planet2->model = glm::translate(sun->model, glm::vec3(-3.0f, 0.0f, 0.0f));
 	planet2->model = glm::rotate(planet2->model, ((glm::pi<float>() * 2) / (360 / beta)), glm::vec3(0.0f, 0.0f, 1.0f));
+	planet2->model = glm::rotate(planet2->model, speed, glm::normalize(glm::vec3(0.0f, 1.0f, 0.0f))); //Hier
 	planet2->model = glm::scale(planet2->model, glm::vec3(planet_size));
 	
 
-	moon2_1->model = glm::translate(planet2->model, glm::vec3(-3.0f, 0.0f, 0.0f));
+	moon2_1->model = glm::translate(planet2->model, glm::vec3(-2.0f, 0.0f, 0.0f));
 	moon2_1->model = glm::scale(moon2_1->model, glm::vec3(moon_size));
+	
+	moon2_2->model = glm::translate(planet2->model, glm::vec3(0.0f, 0.0f, 2.0f));
+	moon2_2->model = glm::scale(moon2_2->model, glm::vec3(moon_size));
 
-	planet1->model = glm::rotate(planet1->model, 0.0001f, glm::normalize(glm::vec3(0.0f, 1.0f, 0.0f)));
+	moon2_3->model = glm::translate(planet2->model, glm::vec3(0.0f, 0.0f, -2.0f));
+	moon2_3->model = glm::scale(moon2_3->model, glm::vec3(moon_size));
+
+	moon2_4->model = glm::translate(planet2->model, glm::vec3(2.0f, 0.0f, 0.0f));
+	moon2_4->model = glm::scale(moon2_4->model, glm::vec3(moon_size));
+
+	speed += 0.0005f; //Hier
 }
 
 /*
